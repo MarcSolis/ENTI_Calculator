@@ -29,7 +29,7 @@ class CalculatorViewModel: CalculatorViewModelProtocol,
                            ObservableObject {
     
     @Published var display: String = "0"
-
+    @Published var buttonText: String = "AC"
     private var operation: Calculation = Calculation(firstOperator: 0,
                                                      secondOperator: 0,
                                                      operation: .none)
@@ -39,6 +39,7 @@ class CalculatorViewModel: CalculatorViewModelProtocol,
         if self.operation.operation != .none && self.operation.secondOperator == nil {
             self.operation.secondOperator = 0
             self.display = digit
+            self.buttonText = "C"
             return
         }
         guard self.display != "0" else {
@@ -51,11 +52,18 @@ class CalculatorViewModel: CalculatorViewModelProtocol,
         }
         
         self.display += digit
+        self.buttonText = "C"
     }
     
     public func resetOperands() {
-        self.operation.reset()
-        self.display = "0"
+        if(self.buttonText == "AC"){
+            self.display = "0"
+            self.operation.reset()
+        }
+        else{
+            self.buttonText = "AC"
+            self.display = "0"
+        }
     }
     
     public func perform(operation: CalculatorOperation) {
@@ -71,6 +79,7 @@ class CalculatorViewModel: CalculatorViewModelProtocol,
             self.operation.reset()
             self.operation.firstOperator = result
             self.operationFinished = true
+            self.buttonText = "AC"
             return
         default:
             self.operation.firstOperator = value
